@@ -20,15 +20,9 @@ public class TripController {
     @Autowired
     private TripService service;
 
-    @Autowired
-    private BucketService servicb;
-
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
     public TripCreatedDTO createTrip(@RequestBody TripCreateDTO trip) {
-        servicb.createBucket(trip);
-
-        
         return service.createTrip(trip);
     }
 }

@@ -1,14 +1,19 @@
 package br.com.fiap.trips.service;
 
 import java.math.BigInteger;
+import java.net.URL;
+import java.util.UUID;
 
 import com.amazonaws.AmazonServiceException;
+import com.amazonaws.HttpMethod;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.CreateBucketRequest;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.GetBucketLocationRequest;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -22,32 +27,26 @@ import br.com.fiap.trips.util.RandomUtil;
 @Service
 public class BucketService {
 
-    @Value("{cloud.aws.credentials.accessKey}")
-    private String id;
 
-    @Value("{cloud.aws.credentials.secretKey}")
-    private String secretKey;
-
-    public String createBucket(TripCreateDTO createDTO) {
+    public String createBucketWithUrl(TripCreateDTO createDTO) {
         String bucketName = getBucketName(createDTO);
 
         try {
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-                .withCredentials(new ProfileCredentialsProvider())
-                .withRegion(Regions.DEFAULT_REGION)
+                .withRegion(Regions.US_EAST_1)
                 .build();
 
             if (!s3Client.doesBucketExistV2(bucketName)) {
-                // Because the CreateBucketRequest object doesn't specify a region, the
-                // bucket is created in the region specified in the client.
+                //Cria o bucket
                 s3Client.createBucket(new CreateBucketRequest(bucketName));
 
-                // Verify that the bucket was created by retrieving it and checking its location.
+                // Verifica se o bucket foi criado, pegando a localidade
                 String bucketLocation = s3Client.getBucketLocation(new GetBucketLocationRequest(bucketName));
                 if (bucketLocation.isEmpty())
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Não foi possível encontrar o bucket " + bucketName);
-
-                return bucketName;
+                
+                    //TODO caso de erro abaixo, deletar bucket e estourar exception
+                return getUrlBucket(bucketName);
             }
         } catch (AmazonServiceException e) {
             // The call was transmitted successfully, but Amazon S3 couldn't process 
@@ -69,6 +68,35 @@ public class BucketService {
         name = name.replace(" ", "").toLowerCase();
 
         return name;
+    }
+
+    private String getUrlBucket(String bucketName) {
+        try {
+            AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
+                .withRegion(Regions.US_EAST_1)
+                .build();
+
+            GeneratePresignedUrlRequest generatePresignedUrlRequest =
+                    new GeneratePresignedUrlRequest(bucketName, "photo-" + UUID.randomUUID().toString())
+                            .withMethod(HttpMethod.GET);
+
+            URL url = s3Client.generatePresignedUrl(generatePresignedUrlRequest);
+
+            return url.toString();
+        } catch (AmazonServiceException e) {
+            // The call was transmitted successfully, but Amazon S3 couldn't process 
+            // it, so it returned an error response.
+            e.printStackTrace();
+            //TODO Estourar exception
+            
+        } catch (SdkClientException e) {
+            // Amazon S3 couldn't be contacted for a response, or the client
+            // couldn't parse the response from Amazon S3.
+            e.printStackTrace();
+            //TODO Estourar exception
+        }
+
+        return null;
     }
 
 }

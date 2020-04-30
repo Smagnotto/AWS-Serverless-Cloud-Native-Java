@@ -7,6 +7,7 @@ import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.Table;
@@ -18,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import br.com.fiap.trips.dto.TripCreateDTO;
 import br.com.fiap.trips.dto.TripCreatedDTO;
+import br.com.fiap.trips.model.TripEntity;
 import br.com.fiap.trips.repository.TripRepository;
 import br.com.fiap.trips.service.BucketService;
 
@@ -29,35 +31,29 @@ public class TripRepositoryImpl implements TripRepository {
 
     @Override
     public TripCreatedDTO save(TripCreateDTO trip) {
-
-
-         AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
-         .withCredentials(new ProfileCredentialsProvider())
-         .withRegion(Regions.DEFAULT_REGION)
-         .build();
-         
-         DynamoDB dynamoDB = new DynamoDB(client);
-
-        Table table = dynamoDB.getTable("trip");
+   
         try {
-            
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
+            .withRegion(Regions.US_EAST_1)
+            .build();
 
-            String id = UUID.randomUUID().toString();
-            String urlBucket = bucketService.createBucket(trip);
+            DynamoDBMapper mapper = new DynamoDBMapper(client);
 
-            Item item = new Item().withPrimaryKey("id",id )
-                .withString("country", trip.getCountry())
-                .withString("city", trip.getCity())
-                .withString("date", formatter.format(trip.getDate()))
-                .withString("url_bucket", urlBucket);
+            //TODO Caso de erro, excluir item.
+            String urlBucket = bucketService.createBucketWithUrl(trip);
 
-            table.putItem(item);
+            TripEntity item = new TripEntity();
+            item.setCountry(trip.getCity());
+            item.setCity(trip.getCity());
+            item.setUrl(urlBucket);
 
-            return new TripCreatedDTO(id, trip, urlBucket);
+            mapper.save(item);
+
+            return new TripCreatedDTO(item.getId(),urlBucket);
 
         }
         catch (Exception e) {
+            e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao salvar a trip");
         }
     }
