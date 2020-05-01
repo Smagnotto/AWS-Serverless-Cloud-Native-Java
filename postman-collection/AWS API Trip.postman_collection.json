@@ -1,0 +1,112 @@
+{
+	"info": {
+		"_postman_id": "5c0c8784-d259-414a-a332-d1111c755b9c",
+		"name": "AWS API Trip",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get by Id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9090/trips/{{id_trip}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"trips",
+						"{{id_trip}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save Trip",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8ceffb6b-5e51-47ec-8531-6e1e9b010f13",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"var id = jsonData.id;",
+							"console.log(id);",
+							"",
+							"pm.collectionVariables.set(\"id_trip\", id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \n\t\"country\": \"Brazil\",\n\t\"city\": \"Sao Paulo\",\n\t\"date\": \"2020-05-01\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9090/trips/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"trips",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get by Period",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9090/trips?start=2020-04-30&end=2020-05-02",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"trips"
+					],
+					"query": [
+						{
+							"key": "start",
+							"value": "2020-04-30"
+						},
+						{
+							"key": "end",
+							"value": "2020-05-02"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"id": "a0d3cfd6-8dd2-4a18-a962-4ff16f059ff6",
+			"key": "id_trip",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
