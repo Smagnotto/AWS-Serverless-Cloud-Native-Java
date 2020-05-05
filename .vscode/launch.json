@@ -6,16 +6,10 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Debug (Launch) - Current File",
-            "request": "launch",
-            "mainClass": "${file}"
-        },
-        {
-            "type": "java",
-            "name": "Debug (Launch)-TripsApplication<trips>",
-            "request": "launch",
-            "mainClass": "br.com.fiap.trips.TripsApplication",
-            "projectName": "trips"
+            "name": "Lambda DEBUG",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": 3000,
         }
     ]
 }

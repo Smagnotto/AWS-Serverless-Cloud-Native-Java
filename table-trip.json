@@ -1,0 +1,41 @@
+{
+    "AttributeDefinitions": [
+        {
+            "AttributeName": "Date",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "Id",
+            "AttributeType": "S"
+        }
+    ],
+    "GlobalSecondaryIndexes": [
+        {
+            "IndexName": "DateIndex",
+            "Projection": {
+                "ProjectionType": "ALL"
+            },
+            "ProvisionedThroughput": {
+                "WriteCapacityUnits": 5,
+                "ReadCapacityUnits": 5
+            },
+            "KeySchema": [
+                {
+                    "KeyType": "HASH",
+                    "AttributeName": "Date"
+                }
+            ]
+        }
+    ],
+    "ProvisionedThroughput": {
+        "WriteCapacityUnits": 5,
+        "ReadCapacityUnits": 5
+    },
+    "TableName": "trip",
+    "KeySchema": [
+        {
+            "KeyType": "HASH",
+            "AttributeName": "Id"
+        }
+    ]
+}

@@ -1,14 +1,14 @@
 # Trips API
 
-### Tecnologias
+### Requerimentos
+* [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
+* [Java SE Development Kit 8 installed](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+* [Docker installed](https://www.docker.com/community-edition)
+* [Maven](https://maven.apache.org/install.html)
+* [SAM CLI](https://github.com/awslabs/aws-sam-cli)
+* [Python 3](https://docs.python.org/3/)
 
-  - Java SE 8
-  - Spring Boot
-  - Amazon DynamoDB
-  - Amazon Bucket S3
-  - Amazon Lambda
-
-### Configuração do Ambiente
+## Configuração do Ambiente
 Antes começar precisamos configurar o ambiente. Precisamos configurar as credencias da AWS. Veja a seguir um exemplo de um arquivo de credenciais da AWS chamado ~/.aws/credentials (%USERPROFILE%/.aws/credentials no Windows).
 
 ```
@@ -17,45 +17,28 @@ aws_access_key_id={YOUR_ACCESS_KEY_ID}
 aws_secret_access_key={YOUR_SECRET_ACCESS_KEY}
 ```
 
-No console da AWS, é necessário acessar o `DynamoDB` e criar tabela com o nome `Trip` e defina uma chave com o nome `Id` e o tipo `String`.
+> Para mais informações, consulte [Configure the AWS Cli](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
 
-### Execução
-Para executar o projeto localmente, é necessário a instalação do [Maven](https://maven.apache.org/download.cgi). 
+## Processo de Setup
 
-Efetuar o clone do repositório git na pasta em que desejar. Depois de efetuar o clone do projeto, executar os comandos abaixo no terminal (cmd no Windows) para compilar o projeto.
+### Instalando as dependências
+Vamos utilizar o `maven` para instalar nossas dependências e empacotar nossa aplicação dentro de um arquivo JAR:
 
-```sh
-cd [Pasta do projeto]
-mvn clean install
+```bash
+mvn install
 ```
 
-Com os comandos acima, será criado um .JAR do projeto, dentro da pasta. Executar os comandos abaixo para executar o projeto:
+### Execução local
 
-```sh
-cd [PASTA PROJETO]\target -- confirmar essa 
-[colocar comando para executar o projeto]
-```
+**Executando a aplicação localmente através de um API Gateway local**
+1. Execute o `DynamoDB` localmanete dentro do docker, utilizando o seguinte comando `docker run -p 8000:8000 amazon/dynamodb-local`
+2. Crie a tabela no `DynamoDB`, utilizando o seguinte comando `aws dynamodb create-table --cli-input-json file://table-trip.json --endpoint-url http://localhost:8000`
 
-Dentro do repositório clonado, existe uma pasta chamada `postman-collection`, com uma collection do [Postman]() para execução das rotas da API.
+Caso a tabela já exista, você pode excluir utilizando o seguinte comando: `aws dynamodb delete-table --table-name trip --endpoint-url http://localhost:8000`
 
-#### Documentação
+3. Inicie o AWS SAM localmente: 
+No MacOS: `sam local start-api --env-vars src/test/resources/test_environmen`
+No Windows: `sam local start-api --env-vars src/test/resources/test_environment_windows.json`
+No Linux: `sam local start-api --env-vars src/test/resources/test_environment_linux.json`
 
-Na API existe três rotas disponíveis, sendo elas:
-> POST [base_url]/trip
-
-Essa rota é reponsável por incluir uma nova viagem, essa viagem será salvo no `DynamoDB` e será criado um `Bucket S3` para upload das fotos.
-
-* Payload de entrada:
-
-```json
-{ 
-	"country": "Brazil",
-	"city": "Sao Paulo",
-	"date": "2020-05-01"
-}
-```
-
-* Payload de saída:
-
-
-
+Se o comando anterior rodar com sucesso, você deverá conseguir bater no seguinte endpoint localmente para invocar as funções configuradas. Você pode explorar todos os endpoints, importe a collection AWS API Trip.postman_collection.json no Postman.
