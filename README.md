@@ -6,7 +6,6 @@
 * [Docker installed](https://www.docker.com/community-edition)
 * [Maven](https://maven.apache.org/install.html)
 * [SAM CLI](https://github.com/awslabs/aws-sam-cli)
-* [Python 3](https://docs.python.org/3/)
 
 ## Configuração do Ambiente
 Antes começar precisamos configurar o ambiente. Precisamos configurar as credencias da AWS. Veja a seguir um exemplo de um arquivo de credenciais da AWS chamado ~/.aws/credentials (%USERPROFILE%/.aws/credentials no Windows).
