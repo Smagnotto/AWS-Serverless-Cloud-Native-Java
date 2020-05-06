@@ -17,8 +17,8 @@ public class GetTripRecordsByPeriod implements RequestHandler<HandlerRequest, Ha
 	@Override
 	public HandlerResponse handleRequest(HandlerRequest request, Context context) {
 
-		final String starts = "2020-05-01";//request.getQueryStringParameters().get("start");
-		final String ends = "2020-06-01";//request.getQueryStringParameters().get("end");
+		final String starts = request.getQueryStringParameters().get("start");
+		final String ends = request.getQueryStringParameters().get("end");
 
 		context.getLogger().log("Procurando por viagens no periodo de " + starts + " e " + ends);
 
