@@ -72,7 +72,7 @@ Depois que o deploy esteja completo, você consegue executar o comando abaixo pa
 
 ```bash
 aws cloudformation describe-stacks \
-    --stack-name sam-orderHandler \
+    --stack-name trip \
     --query 'Stacks[].Outputs'
 ```
 
