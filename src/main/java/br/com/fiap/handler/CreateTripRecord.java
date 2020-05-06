@@ -25,7 +25,7 @@ public class CreateTripRecord implements RequestHandler<HandlerRequest, HandlerR
 		try {
 			trip = new ObjectMapper().readValue(request.getBody(), Trip.class);
 		} catch (IOException e) {
-			return HandlerResponse.builder().setStatusCode(400).setRawBody("There is a error in your Study!").build();
+			return HandlerResponse.builder().setStatusCode(400).setRawBody("Existe um erro no objeto informado!").build();
 		}
 
 		context.getLogger().log(String.format("Criando uma nova viagem para cidade %s, Pais %s", trip.getCity(), trip.getCountry()));

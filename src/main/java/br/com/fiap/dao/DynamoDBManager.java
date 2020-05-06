@@ -4,14 +4,14 @@ import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 
 public class DynamoDBManager {
 
 	private static DynamoDBMapper mapper;
+	private static AmazonDynamoDB ddb;
 
 	static {
-		
-		AmazonDynamoDB ddb = null;
 		final String endpoint = System.getenv("ENDPOINT_OVERRIDE");
 		
         if (endpoint != null && !endpoint.isEmpty()) {
@@ -28,4 +28,11 @@ public class DynamoDBManager {
 		return DynamoDBManager.mapper;
 	}
 
+	public static AmazonDynamoDB amazonDynamo(){
+		return DynamoDBManager.ddb;
+	}
+
+	public static DynamoDB dynamoDb() {
+		return new DynamoDB(DynamoDBManager.ddb);
+	}
 }

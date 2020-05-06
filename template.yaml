@@ -29,7 +29,21 @@ Resources:
          Properties:
            Path: /trips
            Method: post
-           
+  GetTripRecordByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+     CodeUri: target/trip-aws-serveless-1.0.0-SNAPSHOT-jar-with-dependencies.jar
+     Handler: br.com.fiap.handler.GetTripRecordById::handleRequest
+     Runtime: java8
+     Policies:
+       - DynamoDBCrudPolicy:
+           TableName: !Ref TripTable     
+     Events:
+       GetTripRecordById:
+         Type: Api
+         Properties:
+           Path: /trips/{id}
+           Method: get         
   GetTripRecordsByPeriodFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -49,7 +63,7 @@ Resources:
               - method.request.querystring.start
               - method.request.querystring.end
               
-  StudyTable:
+  TripTable:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: trip
@@ -62,13 +76,12 @@ Resources:
         - AttributeName: id
           KeyType: HASH
       GlobalSecondaryIndexes: 
-        - IndexName: dateIndex
+        - IndexName: DateIndex
           KeySchema: 
             - AttributeName: date
               KeyType: HASH
           Projection:
-             ProjectionType: ALL     
-      BillingMode: PAY_PER_REQUEST              
+             ProjectionType: ALL  
 
 Outputs:
 

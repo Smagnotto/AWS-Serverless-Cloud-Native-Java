@@ -1,11 +1,22 @@
 package br.com.fiap.dao;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.Index;
+import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.ItemCollection;
+import com.amazonaws.services.dynamodbv2.document.QueryOutcome;
+import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
+import com.amazonaws.services.dynamodbv2.document.utils.NameMap;
+import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 
 import br.com.fiap.model.Trip;
@@ -13,28 +24,36 @@ import br.com.fiap.model.Trip;
 public class TripRepository {
 
 	private static final DynamoDBMapper mapper = DynamoDBManager.mapper();
+	private static final DynamoDB dynamoDB = DynamoDBManager.dynamoDb();
 
 	public Trip save(final Trip Trip) {
 		mapper.save(Trip);
 		return Trip;
 	}
 
-	public List<Trip> findByPeriod(final String starts, final String ends) {
+	public List<Trip> findByPeriod(final String start, final String end) {
 
-		final Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
-		eav.put(":val1", new AttributeValue().withS(starts));
-		eav.put(":val2", new AttributeValue().withS(ends));
+		Table table = dynamoDB.getTable("trip");
+		Index index = table.getIndex("DateIndex");
 
-		Map<String,String> expressionAttributesNames = new HashMap<>();
-		expressionAttributesNames.put("#date_trip","date");
+		QuerySpec spec = new QuerySpec()
+				.withKeyConditionExpression("#d between :start and :end")
+				.withNameMap(new NameMap().with("#d", "Date"))
+				.withValueMap(new ValueMap()
+								.withString(":start", start)
+								.withString(":end", end));
 
-		final DynamoDBQueryExpression<Trip> queryExpression = new DynamoDBQueryExpression<Trip>()
-				.withExpressionAttributeNames(expressionAttributesNames)
-				.withKeyConditionExpression("#date_trip between :val1 and :val2")
-				.withExpressionAttributeValues(eav);
+		ItemCollection<QueryOutcome> items = index.query(spec);
+		Iterator<Item> iter = items.iterator();
 
-		final List<Trip> studies = mapper.query(Trip.class, queryExpression);
+		while (iter.hasNext()) {
+            System.out.println(iter.next().toJSONPretty());
+        }
 
-		return studies;
+		return null;
+	}
+
+	public Trip findById(final String id) {
+		return mapper.load(Trip.class, id);
 	}
 }
