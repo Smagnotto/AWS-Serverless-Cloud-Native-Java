@@ -41,3 +41,47 @@ Caso a tabela já exista, você pode excluir utilizando o seguinte comando: `aws
 * No Linux: `sam local start-api --env-vars src/test/resources/test_environment_linux.json`
 
 Se o comando anterior rodar com sucesso, você deverá conseguir bater no seguinte endpoint localmente para invocar as funções configuradas. Você pode explorar todos os endpoints, importe a collection AWS API Trip.postman_collection.json no Postman.
+
+## Packaging and deployment
+Primeiramente, nós precisamos de um `bucket S3` onde podemos realizar o upload das nossas funções lambadas. Para criar um bucket, execute os comandos abaixo:
+
+```bash
+export BUCKET_NAME=my_cool_new_bucket
+aws s3 mb s3://$BUCKET_NAME
+```
+Vamos rodar agora o comando para empacotar nossas funções Lambas no S3:
+```bash
+sam package \
+    --template-file template.yaml \
+    --output-template-file packaged.yaml \
+    --s3-bucket $BUCKET_NAME
+```
+
+O próximo comando irá criar a Cloudformation Stack e realizar o deploy dos resources SAM.
+
+```bash
+sam deploy \
+    --template-file packaged.yaml \
+    --stack-name trip \
+    --capabilities CAPABILITY_IAM
+```
+
+> **Veja [Serverless Application Model (SAM) HOWTO Guide](https://github.com/awslabs/serverless-application-model/blob/master/HOWTO.md) para mais detalhes.**
+
+Depois que o deploy esteja completo, você consegue executar o comando abaixo pare pegar a URL do API Gateway:
+
+```bash
+aws cloudformation describe-stacks \
+    --stack-name sam-orderHandler \
+    --query 'Stacks[].Outputs'
+```
+
+## Integrantes:
+
+| Nome | RM |
+| ---- | -- |
+| Bruno Gea | RM 333475 |
+| Diego Soares Smagnotto Saraiva | RM 333886 |
+| Eduardo Matoso | RM 333906 |
+| Thiago Langoni | RM 333947 |
+| Felipe da Costa | RM 333862 |

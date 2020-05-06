@@ -6,5 +6,9 @@
 	"GetTripRecordsByPeriodFunction": {
 		"ENDPOINT_OVERRIDE": "http://docker.for.win.localhost:8000",
 		"TABLE_NAME": "trip"
+	},
+	"GetTripRecordByIdFunction": {
+		"ENDPOINT_OVERRIDE": "http://docker.for.win.localhost:8000",
+		"TABLE_NAME": "trip"
 	}
 }

@@ -5,7 +5,7 @@ Description: >
     Rest API para gerencias viagens
 Globals:
     Function:
-        Timeout: 20
+        Timeout: 50
         MemorySize: 512
         Environment:
           Variables:
@@ -66,6 +66,9 @@ Resources:
   TripTable:
     Type: AWS::DynamoDB::Table
     Properties:
+      ProvisionedThroughput:
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
       TableName: trip
       AttributeDefinitions:
         - AttributeName: id
@@ -81,9 +84,14 @@ Resources:
             - AttributeName: date
               KeyType: HASH
           Projection:
-             ProjectionType: ALL  
-
+             ProjectionType: ALL
+          ProvisionedThroughput: 
+            ReadCapacityUnits: "5"
+            WriteCapacityUnits: "5"
 Outputs:
+    TripsAPI:
+      Description: "Url do API Gateway para as funções"
+      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/trips/"
 
     CreateTripRecordFunction:
       Description: "CreateTripRecord Lambda Function ARN"
@@ -92,3 +100,7 @@ Outputs:
     GetTripRecordsByPeriodFunction:
       Description: "GetTripRecordsByPeriod Lambda Function ARN"
       Value: !GetAtt GetTripRecordsByPeriodFunction.Arn
+
+    GetTripRecordByIdFunction:
+      Description: "GetTripRecordById Lambda Function ARN"
+      Value: !GetAtt GetTripRecordByIdFunction.Arn
