@@ -6,7 +6,6 @@
 * [Docker installed](https://www.docker.com/community-edition)
 * [Maven](https://maven.apache.org/install.html)
 * [SAM CLI](https://github.com/awslabs/aws-sam-cli)
-* [Python 3](https://docs.python.org/3/)
 
 ## Configuração do Ambiente
 Antes começar precisamos configurar o ambiente. Precisamos configurar as credencias da AWS. Veja a seguir um exemplo de um arquivo de credenciais da AWS chamado ~/.aws/credentials (%USERPROFILE%/.aws/credentials no Windows).
@@ -37,8 +36,8 @@ mvn install
 Caso a tabela já exista, você pode excluir utilizando o seguinte comando: `aws dynamodb delete-table --table-name trip --endpoint-url http://localhost:8000`
 
 3. Inicie o AWS SAM localmente: 
-No MacOS: `sam local start-api --env-vars src/test/resources/test_environmen`
-No Windows: `sam local start-api --env-vars src/test/resources/test_environment_windows.json`
-No Linux: `sam local start-api --env-vars src/test/resources/test_environment_linux.json`
+* No MacOS: `sam local start-api --env-vars src/test/resources/test_environmen`
+* No Windows: `sam local start-api --env-vars src/test/resources/test_environment_windows.json`
+* No Linux: `sam local start-api --env-vars src/test/resources/test_environment_linux.json`
 
 Se o comando anterior rodar com sucesso, você deverá conseguir bater no seguinte endpoint localmente para invocar as funções configuradas. Você pode explorar todos os endpoints, importe a collection AWS API Trip.postman_collection.json no Postman.
